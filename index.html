@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>D3 Bar Chart with Details on Click</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .chart {
+            display: flex;
+            align-items: flex-end;
+            height: 300px;
+            width: 600px;
+        }
+        .bar {
+            width: 60px;
+            margin-right: 10px;
+            background-color: steelblue;
+            cursor: pointer;
+        }
+        .details {
+            width: 300px;
+            height: 300px;
+            overflow-y: auto;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="chart" class="chart"></div>
+<div id="details" class="details"></div>
+
+<script>
+// Assuming the JSON file is named "data.json" and located in the same directory as this HTML file
+fetch('data.json')
+    .then(response => response.json())
+    .then(data => {
+        const dataArray = Array.isArray(data) ? data : [data]; // Ensure data is in an array format
+        
+        // Create bars
+        const chart = d3.select('#chart');
+        chart.selectAll('.bar')
+            .data(dataArray)
+            .enter()
+            .append('div')
+            .attr('class', 'bar')
+            .style('height', d => `${d.average_score * 100}px`) // Adjust scaling as needed
+            .text(d => d.diagnosis)
+            .on('click', (event, d) => {
+                const details = d3.select('#details');
+                details.html(''); // Clear previous content
+                d.items.forEach(p => {
+                    details.append('p').text(p);
+                });
+            });
+    })
+    .catch(error => console.error('Error loading the JSON file:', error));
+</script>
+</body>
+</html>
